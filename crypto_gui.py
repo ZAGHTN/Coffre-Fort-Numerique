@@ -17,6 +17,10 @@ from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
 from cryptography.exceptions import InvalidTag
 from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
+import json
+import urllib.request
+import webbrowser
+import threading
 
 # --- CONSTANTES DE SÉCURITÉ ---
 TAG_SIZE = 16   # Taille du tag d'authentification
@@ -24,6 +28,7 @@ SALT_SIZE = 16  # Taille du sel pour le mot de passe
 CHUNK_SIZE = 64 * 1024 # Lecture par blocs de 64 Ko pour la barre de progression
 APP_VERSION = "1.0"
 APP_AUTHOR = "Zaghdoudi Chokri"
+GITHUB_REPO = "ZAGHTN/Coffre-Fort-Numerique" # Votre dépôt GitHub
 
 # --- LOGIQUE DE CHIFFREMENT (Moteur) ---
 
@@ -380,10 +385,38 @@ class CryptoApp:
     def show_about(self):
         """Affiche la fenêtre À propos."""
         messagebox.showinfo("À propos", f"Coffre-fort numérique, réalisé avec Python\nVersion : {APP_VERSION}\nAuteur : {APP_AUTHOR}\n\nSécurité : AES-256 GCM + PBKDF2")
+    
+    def _is_version_newer(self, remote: str, current: str) -> bool:
+        """Compare deux numéros de version (ex: '1.1' > '1.0')."""
+        try:
+            r_parts = [int(x) for x in remote.split('.')]
+            c_parts = [int(x) for x in current.split('.')]
+            return r_parts > c_parts
+        except ValueError:
+            return False
+
+    def _perform_update_check(self):
+        """Exécute la vérification réseau dans un thread séparé."""
+        try:
+            url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
+            # Timeout de 5 secondes pour ne pas bloquer si la connexion est lente
+            with urllib.request.urlopen(url, timeout=5) as response:
+                data = json.loads(response.read().decode())
+                latest_tag = data.get("tag_name", "").lstrip("v") # Enlève le 'v' de v1.0
+                html_url = data.get("html_url", "")
+
+            if self._is_version_newer(latest_tag, APP_VERSION):
+                if messagebox.askyesno("Mise à jour disponible", f"Une nouvelle version ({latest_tag}) est disponible !\n\nVoulez-vous la télécharger maintenant ?"):
+                    webbrowser.open(html_url)
+            else:
+                messagebox.showinfo("Mise à jour", f"Vous utilisez la version {APP_VERSION}.\nC'est la dernière version disponible.")
+        
+        except Exception as e:
+            messagebox.showerror("Erreur", f"Impossible de vérifier les mises à jour.\nVérifiez votre connexion internet.\n\nDétails : {e}")
 
     def check_updates(self):
-        """Simule la vérification des mises à jour."""
-        messagebox.showinfo("Mise à jour", "Connexion au serveur...\n\nVous utilisez la dernière version disponible.")
+        """Lance la vérification des mises à jour en arrière-plan."""
+        threading.Thread(target=self._perform_update_check, daemon=True).start()
 
     def show_logs(self):
         """Affiche le contenu du fichier journal dans une nouvelle fenêtre."""
