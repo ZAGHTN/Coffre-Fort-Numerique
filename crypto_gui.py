@@ -236,13 +236,18 @@ def verify_integrity_logic(input_file: str, password: str, callback: callable = 
             if callback:
                 callback(f_in.tell(), file_size)
         
+
         decryptor.finalize() # Lève InvalidTag si échec
     return True
 
 def resource_path(relative_path: str) -> str:
     """Obtient le chemin absolu de la ressource, fonctionne pour dev et PyInstaller."""
-    
-    return path.abspath(path.join(path.dirname(__file__), relative_path))
+    try:
+        # PyInstaller crée un dossier temporaire et stocke le chemin dans _MEIPASS
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = path.dirname(path.abspath(__file__))
+    return path.join(base_path, relative_path)
 
 # --- INTERFACE GRAPHIQUE (Tkinter) ---
 
