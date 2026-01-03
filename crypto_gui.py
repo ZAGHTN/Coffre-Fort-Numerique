@@ -26,7 +26,7 @@ import threading
 TAG_SIZE = 16   # Taille du tag d'authentification
 SALT_SIZE = 16  # Taille du sel pour le mot de passe
 CHUNK_SIZE = 64 * 1024 # Lecture par blocs de 64 Ko pour la barre de progression
-APP_VERSION = "1.0"
+APP_VERSION = "1.1"
 APP_AUTHOR = "Zaghdoudi Chokri"
 GITHUB_REPO = "ZAGHTN/Coffre-Fort-Numerique" # Votre dépôt GitHub
 
