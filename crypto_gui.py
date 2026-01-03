@@ -29,6 +29,103 @@ CHUNK_SIZE = 64 * 1024 # Lecture par blocs de 64 Ko pour la barre de progression
 APP_VERSION = "1.1"
 APP_AUTHOR = "Zaghdoudi Chokri"
 GITHUB_REPO = "ZAGHTN/Coffre-Fort-Numerique" # Votre dépôt GitHub
+CURRENT_LANG = "fr" # Variable globale pour la langue
+
+# --- TRADUCTIONS ---
+TRANSLATIONS = {
+    "fr": {
+        "title": "Coffre-fort Numérique",
+        "welcome": "Bienvenue dans le Coffre-fort",
+        "action_prompt": "Que souhaitez-vous faire ?",
+        "encrypt": "Chiffrer",
+        "decrypt": "Déchiffrer",
+        "verify": "Vérifier",
+        "quit": "Quitter",
+        "view": "Affichage",
+        "dark": "Thème Sombre",
+        "light": "Thème Clair",
+        "help": "Aide",
+        "about": "À propos",
+        "update": "Vérifier les mises à jour",
+        "file": "Fichier",
+        "main_menu": "Menu Principal",
+        "history": "Voir l'historique",
+        "lang": "Langue",
+        "sel_files": "Sélection des fichiers",
+        "src_file": "Fichier source :",
+        "dest_file": "Destination (Optionnel) :\nSi ce champ est laissé vide, le résultat sera enregistré dans le dossier de l'application.",
+        "security": "Sécurité",
+        "pwd": "Mot de passe :",
+        "secure_del": "Supprimer le fichier original (Secure Delete)",
+        "start_enc": "LANCER LE CHIFFREMENT",
+        "start_dec": "LANCER LE DÉCHIFFREMENT",
+        "back": "Retour",
+        "reset": "Réinitialiser",
+        "mode_enc": "🔒 Mode Chiffrement",
+        "mode_dec": "🔓 Mode Déchiffrement",
+        "err_file": "Le fichier d'entrée n'existe pas.",
+        "err_pwd": "Le mot de passe est obligatoire.",
+        "success": "Succès",
+        "error": "Erreur",
+        "browse": "Sélectionner un fichier",
+        "save": "Choisir où sauvegarder",
+        "show_pwd": "Afficher/Masquer le mot de passe",
+        "gen_pwd": "Générer un mot de passe aléatoire",
+        "about_msg": "Coffre-fort numérique, réalisé avec Python\nVersion : {version}\nAuteur : {author}\n\nSécurité : AES-256 GCM + PBKDF2",
+        "hist_title": "Historique des opérations",
+        "hist_clear": "🗑 Effacer l'historique",
+        "confirm_overwrite": "Le fichier de sortie existe déjà :\n{file}\nVoulez-vous l'écraser ?",
+        "warning": "Attention"
+    },
+    "en": {
+        "title": "Digital Safe",
+        "welcome": "Welcome to the Digital Safe",
+        "action_prompt": "What would you like to do?",
+        "encrypt": "Encrypt",
+        "decrypt": "Decrypt",
+        "verify": "Verify",
+        "quit": "Quit",
+        "view": "View",
+        "dark": "Dark Theme",
+        "light": "Light Theme",
+        "help": "Help",
+        "about": "About",
+        "update": "Check for updates",
+        "file": "File",
+        "main_menu": "Main Menu",
+        "history": "View History",
+        "lang": "Language",
+        "sel_files": "File Selection",
+        "src_file": "Source File:",
+        "dest_file": "Destination (Optional):\nIf left empty, result will be saved in the application folder.",
+        "security": "Security",
+        "pwd": "Password:",
+        "secure_del": "Delete original file (Secure Delete)",
+        "start_enc": "START ENCRYPTION",
+        "start_dec": "START DECRYPTION",
+        "back": "Back",
+        "reset": "Reset",
+        "mode_enc": "🔒 Encryption Mode",
+        "mode_dec": "🔓 Decryption Mode",
+        "err_file": "Input file does not exist.",
+        "err_pwd": "Password is required.",
+        "success": "Success",
+        "error": "Error",
+        "browse": "Select a file",
+        "save": "Choose where to save",
+        "show_pwd": "Show/Hide password",
+        "gen_pwd": "Generate random password",
+        "about_msg": "Digital Safe, made with Python\nVersion: {version}\nAuthor: {author}\n\nSecurity: AES-256 GCM + PBKDF2",
+        "hist_title": "Operation History",
+        "hist_clear": "🗑 Clear History",
+        "confirm_overwrite": "Output file already exists:\n{file}\nDo you want to overwrite it?",
+        "warning": "Warning"
+    }
+}
+
+def tr_global(key):
+    """Fonction d'aide pour traduire les messages dans les fonctions statiques."""
+    return TRANSLATIONS.get(CURRENT_LANG, TRANSLATIONS["fr"]).get(key, key)
 
 # --- LOGIQUE DE CHIFFREMENT (Moteur) ---
 
@@ -65,13 +162,13 @@ def encrypt_logic(input_file: str, output_file: str,
     """Lit, compresse, chiffre et sauvegarde."""
     # 1. Préparation
     if not os.path.exists(input_file):
-        messagebox.showerror("Erreur", "Le fichier d'entrée n'existe pas.")
+        messagebox.showerror(tr_global("error"), tr_global("err_file"))
         return False
     if os.path.exists(output_file):
-        if not messagebox.askyesno("Attention", f"Le fichier de sortie existe déjà :\n{output_file}\nVoulez-vous l'écraser ?"):
+        if not messagebox.askyesno(tr_global("warning"), tr_global("confirm_overwrite").format(file=output_file)):
             return False
     if not password:
-        messagebox.showerror("Erreur", "Le mot de passe est obligatoire.")
+        messagebox.showerror(tr_global("error"), tr_global("err_pwd"))
         return False
 
     # Vérification de l'espace disque disponible
@@ -156,13 +253,13 @@ def decrypt_logic(input_file: str, output_file: str,
     """Lit, déchiffre, décompresse et sauvegarde."""
     # Vérifier le arguments
     if not os.path.exists(input_file):
-        messagebox.showerror("Erreur", "Le fichier d'entrée n'existe pas.")
+        messagebox.showerror(tr_global("error"), tr_global("err_file"))
         return False
     if os.path.exists(output_file):
-        if not messagebox.askyesno("Attention", f"Le fichier de sortie existe déjà :\n{output_file}\nVoulez-vous l'écraser ?"):
+        if not messagebox.askyesno(tr_global("warning"), tr_global("confirm_overwrite").format(file=output_file)):
             return False
     if not password:
-        messagebox.showerror("Erreur", "Le mot de passe est obligatoire.")
+        messagebox.showerror(tr_global("error"), tr_global("err_pwd"))
         return False
     
     # Vérification taille minimale
@@ -259,7 +356,7 @@ def resource_path(relative_path: str) -> str:
 class CryptoApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Coffre-fort Numérique")
+        self.current_lang = "fr" # Langue par défaut
         self.root.resizable(False, False)
 
         self.mode = ""
@@ -279,12 +376,16 @@ class CryptoApp:
         # Gestion de la configuration (Position)
         self.config_file = "config.ini"
         self.load_config()
+        self.root.title(self.tr("title"))
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
 
         self.btn_encrypt = None
         self.btn_decrypt = None
         self.btn_verify = None
         self.show_welcome_screen()
+        
+        # Vérification automatique des mises à jour au démarrage (après 2 secondes)
+        self.root.after(2000, lambda: self.check_updates(silent=True))
 
     def center_window(self, width, height, window=None):
         """Redimensionne et centre la fenêtre sur l'écran."""
@@ -302,6 +403,10 @@ class CryptoApp:
             # Réinitialiser l'apparence de la fenêtre
             target.attributes("-alpha", 1.0)
 
+    def tr(self, key):
+        """Récupère la traduction pour la clé donnée."""
+        return TRANSLATIONS.get(self.current_lang, TRANSLATIONS["fr"]).get(key, key)
+
     def show_welcome_screen(self):
         """Affiche l'écran de sélection du mode."""
         for widget in self.root.winfo_children():
@@ -310,32 +415,40 @@ class CryptoApp:
         # Réinitialiser le menu
         menubar = tk.Menu(self.root)
         exit_menu = tk.Menu(menubar, tearoff=0)
-        exit_menu.add_command(label="Quitter", command=self.on_closing)
-        menubar.add_cascade(label="Quitter", menu=exit_menu)
+        exit_menu.add_command(label=self.tr("quit"), command=self.on_closing)
+        menubar.add_cascade(label=self.tr("quit"), menu=exit_menu)
 
         view_menu = tk.Menu(menubar, tearoff=0)
-        view_menu.add_command(label="Thème Sombre", command=lambda: self.change_theme("superhero"))
-        view_menu.add_command(label="Thème Clair", command=lambda: self.change_theme("cosmo"))
-        menubar.add_cascade(label="Affichage", menu=view_menu)
+        view_menu.add_command(label=self.tr("dark"), command=lambda: self.change_theme("superhero"))
+        view_menu.add_command(label=self.tr("light"), command=lambda: self.change_theme("cosmo"))
+        view_menu.add_separator()
+        
+        # Sous-menu Langue
+        lang_menu = tk.Menu(view_menu, tearoff=0)
+        lang_menu.add_command(label="Français", command=lambda: self.change_language("fr"))
+        lang_menu.add_command(label="English", command=lambda: self.change_language("en"))
+        view_menu.add_cascade(label=self.tr("lang"), menu=lang_menu)
+        
+        menubar.add_cascade(label=self.tr("view"), menu=view_menu)
 
         self.root.config(menu=menubar)
 
         # Centrer la fenêtre d'accueil
         self.center_window(450, 250)
         
-        ttk.Label(self.root, text="Bienvenue dans le Coffre-fort", font=("Helvetica", 10, "bold"), bootstyle="info").pack(pady=20, fill=X)
-        ttk.Label(self.root, text="Que souhaitez-vous faire ?", font=("Helvetica", 10)).pack(pady=10)
+        ttk.Label(self.root, text=self.tr("welcome"), font=("Helvetica", 10, "bold"), bootstyle="info").pack(pady=20, fill=X)
+        ttk.Label(self.root, text=self.tr("action_prompt"), font=("Helvetica", 10)).pack(pady=10)
         
         frame_buttons = ttk.Frame(self.root)
         frame_buttons.pack(pady=20)
         
-        btn_enc = ttk.Button(frame_buttons, text=" Chiffrer", width=15, bootstyle="danger-outline", command=lambda: self.setup_main_ui("encrypt"))
+        btn_enc = ttk.Button(frame_buttons, text=f" {self.tr('encrypt')}", width=15, bootstyle="danger-outline", command=lambda: self.setup_main_ui("encrypt"))
         btn_enc.pack(side=tk.LEFT, padx=10)
-        ToolTip(btn_enc, text="Chiffrer un fichier pour le protéger", padding=3)
+        ToolTip(btn_enc, text=self.tr("encrypt"), padding=3)
         
-        btn_dec = ttk.Button(frame_buttons, text="🔓 Déchiffrer", width=15, bootstyle="success-outline", command=lambda: self.setup_main_ui("decrypt"))
+        btn_dec = ttk.Button(frame_buttons, text=f"🔓 {self.tr('decrypt')}", width=15, bootstyle="success-outline", command=lambda: self.setup_main_ui("decrypt"))
         btn_dec.pack(side=tk.LEFT, padx=10)
-        ToolTip(btn_dec, text="Restaurer un fichier chiffré", 
+        ToolTip(btn_dec, text=self.tr("decrypt"), 
                 padding=3)
 
     def load_config(self):
@@ -349,6 +462,9 @@ class CryptoApp:
                     self.root.geometry(f"+{x}+{y}")
             if "Settings" in config:
                 self.current_theme = config["Settings"].get("theme", "superhero")
+                self.current_lang = config["Settings"].get("lang", "fr")
+                global CURRENT_LANG
+                CURRENT_LANG = self.current_lang
         
         try:
             self.root.style.theme_use(self.current_theme)
@@ -367,6 +483,7 @@ class CryptoApp:
         
         if "Settings" not in config: config["Settings"] = {}
         config["Settings"]["theme"] = self.current_theme
+        config["Settings"]["lang"] = self.current_lang
         
         with open(self.config_file, "w") as f:
             config.write(f)
@@ -377,6 +494,18 @@ class CryptoApp:
         self.root.style.theme_use(theme_name)
         self.save_config()
 
+    def change_language(self, lang):
+        """Change la langue et rafraîchit l'interface."""
+        self.current_lang = lang
+        global CURRENT_LANG
+        CURRENT_LANG = lang
+        self.save_config()
+        self.root.title(self.tr("title"))
+        if self.mode:
+            self.setup_main_ui(self.mode)
+        else:
+            self.show_welcome_screen()
+
     def on_closing(self):
         """Sauvegarde et quitte."""
         self.save_config()
@@ -384,7 +513,8 @@ class CryptoApp:
 
     def show_about(self):
         """Affiche la fenêtre À propos."""
-        messagebox.showinfo("À propos", f"Coffre-fort numérique, réalisé avec Python\nVersion : {APP_VERSION}\nAuteur : {APP_AUTHOR}\n\nSécurité : AES-256 GCM + PBKDF2")
+        msg = self.tr("about_msg").format(version=APP_VERSION, author=APP_AUTHOR)
+        messagebox.showinfo(self.tr("about"), msg)
     
     def _is_version_newer(self, remote: str, current: str) -> bool:
         """Compare deux numéros de version (ex: '1.1' > '1.0')."""
@@ -395,28 +525,36 @@ class CryptoApp:
         except ValueError:
             return False
 
-    def _perform_update_check(self):
+    def _ask_update(self, version, url):
+        """Affiche la demande de mise à jour sur le thread principal."""
+        if messagebox.askyesno("Mise à jour disponible", f"Une nouvelle version ({version}) est disponible !\n\nVoulez-vous la télécharger maintenant ?"):
+            webbrowser.open(url)
+
+    def _perform_update_check(self, silent=False):
         """Exécute la vérification réseau dans un thread séparé."""
         try:
             url = f"https://api.github.com/repos/{GITHUB_REPO}/releases/latest"
-            # Timeout de 5 secondes pour ne pas bloquer si la connexion est lente
-            with urllib.request.urlopen(url, timeout=5) as response:
+            # GitHub exige un User-Agent pour l'API, sinon erreur 403
+            req = urllib.request.Request(url, headers={'User-Agent': 'CoffreFortApp'})
+            
+            with urllib.request.urlopen(req, timeout=5) as response:
                 data = json.loads(response.read().decode())
-                latest_tag = data.get("tag_name", "").lstrip("v") # Enlève le 'v' de v1.0
+                latest_tag = data.get("tag_name", "").lower().lstrip("v") # Gère v1.0 et V1.0
                 html_url = data.get("html_url", "")
 
             if self._is_version_newer(latest_tag, APP_VERSION):
-                if messagebox.askyesno("Mise à jour disponible", f"Une nouvelle version ({latest_tag}) est disponible !\n\nVoulez-vous la télécharger maintenant ?"):
-                    webbrowser.open(html_url)
+                self.root.after(0, lambda: self._ask_update(latest_tag, html_url))
             else:
-                messagebox.showinfo("Mise à jour", f"Vous utilisez la version {APP_VERSION}.\nC'est la dernière version disponible.")
+                if not silent:
+                    self.root.after(0, lambda: messagebox.showinfo("Mise à jour", f"Vous utilisez la version {APP_VERSION}.\nC'est la dernière version disponible."))
         
         except Exception as e:
-            messagebox.showerror("Erreur", f"Impossible de vérifier les mises à jour.\nVérifiez votre connexion internet.\n\nDétails : {e}")
+            if not silent:
+                self.root.after(0, lambda: messagebox.showerror("Erreur", f"Impossible de vérifier les mises à jour.\n\nDétails : {e}"))
 
-    def check_updates(self):
+    def check_updates(self, silent=False):
         """Lance la vérification des mises à jour en arrière-plan."""
-        threading.Thread(target=self._perform_update_check, daemon=True).start()
+        threading.Thread(target=self._perform_update_check, args=(silent,), daemon=True).start()
 
     def show_logs(self):
         """Affiche le contenu du fichier journal dans une nouvelle fenêtre."""
@@ -426,7 +564,7 @@ class CryptoApp:
             return
 
         top = ttk.Toplevel(self.root)
-        top.title("Historique des opérations")
+        top.title(self.tr("hist_title"))
         self.center_window(700, 500, top)
         
         frame_txt = ttk.Frame(top)
@@ -450,17 +588,17 @@ class CryptoApp:
         text_area.configure(state='disabled') # Lecture seule
 
         def clear_history():
-            if messagebox.askyesno("Confirmation", "Voulez-vous vraiment effacer tout l'historique ?"):
+            if messagebox.askyesno("Confirmation", self.tr("confirm_clear")):
                 try:
                     open(log_file, 'w').close() # Vider le fichier
                     text_area.configure(state='normal')
                     text_area.delete('1.0', tk.END)
                     text_area.configure(state='disabled')
-                    messagebox.showinfo("Succès", "Historique effacé avec succès.")
+                    messagebox.showinfo(self.tr("success"), self.tr("hist_cleared"))
                 except Exception as e:
-                    messagebox.showerror("Erreur", f"Impossible d'effacer le fichier : {e}")
+                    messagebox.showerror(self.tr("error"), f"Impossible d'effacer le fichier : {e}")
 
-        ttk.Button(top, text="🗑 Effacer l'historique", bootstyle="danger-outline", command=clear_history).pack(pady=10)
+        ttk.Button(top, text=self.tr("hist_clear"), bootstyle="danger-outline", command=clear_history).pack(pady=10)
 
     def setup_main_ui(self, mode: str) -> None:
         """Configure l'interface principale selon le mode choisi."""
@@ -473,37 +611,44 @@ class CryptoApp:
         # Menu Fichier
         menubar = tk.Menu(self.root)
         file_menu = tk.Menu(menubar, tearoff=0)
-        file_menu.add_command(label="Menu Principal", command=self.show_welcome_screen)
-        file_menu.add_command(label="Voir l'historique", command=self.show_logs)
+        file_menu.add_command(label=self.tr("main_menu"), command=self.show_welcome_screen)
+        file_menu.add_command(label=self.tr("history"), command=self.show_logs)
         file_menu.add_separator()
-        file_menu.add_command(label="Quitter", command=self.on_closing)
-        menubar.add_cascade(label="Fichier", menu=file_menu)
+        file_menu.add_command(label=self.tr("quit"), command=self.on_closing)
+        menubar.add_cascade(label=self.tr("file"), menu=file_menu)
 
         # Menu Affichage
         view_menu = tk.Menu(menubar, tearoff=0)
-        view_menu.add_command(label="Thème Sombre", command=lambda: self.change_theme("superhero"))
-        view_menu.add_command(label="Thème Clair", command=lambda: self.change_theme("cosmo"))
-        menubar.add_cascade(label="Affichage", menu=view_menu)
+        view_menu.add_command(label=self.tr("dark"), command=lambda: self.change_theme("superhero"))
+        view_menu.add_command(label=self.tr("light"), command=lambda: self.change_theme("cosmo"))
+        view_menu.add_separator()
+        
+        lang_menu = tk.Menu(view_menu, tearoff=0)
+        lang_menu.add_command(label="Français", command=lambda: self.change_language("fr"))
+        lang_menu.add_command(label="English", command=lambda: self.change_language("en"))
+        view_menu.add_cascade(label=self.tr("lang"), menu=lang_menu)
+        
+        menubar.add_cascade(label=self.tr("view"), menu=view_menu)
 
         # Menu Aide
         help_menu = tk.Menu(menubar, tearoff=0)
-        help_menu.add_command(label="À propos", command=self.show_about)
-        help_menu.add_command(label="Vérifier les mises à jour", command=self.check_updates)
-        menubar.add_cascade(label="Aide", menu=help_menu)
+        help_menu.add_command(label=self.tr("about"), command=self.show_about)
+        help_menu.add_command(label=self.tr("update"), command=self.check_updates)
+        menubar.add_cascade(label=self.tr("help"), menu=help_menu)
 
         self.root.config(menu=menubar)
 
         # Zone de sélection de fichier
         style_color = "danger" if self.mode == "encrypt" else "success"
-        title_text = "🔒 Mode Chiffrement" if self.mode == "encrypt" else "🔓 Mode Déchiffrement"
+        title_text = self.tr("mode_enc") if self.mode == "encrypt" else self.tr("mode_dec")
         
         ttk.Label(self.root, text=title_text, font=("Helvetica", 14, "bold"), bootstyle=style_color).pack(pady=(15, 10))
         
         # Groupe Fichiers
-        lf_files = ttk.Labelframe(self.root, text="Sélection des fichiers", padding=15, bootstyle=style_color)
+        lf_files = ttk.Labelframe(self.root, text=self.tr("sel_files"), padding=15, bootstyle=style_color)
         lf_files.pack(fill=tk.X, padx=20, pady=5)
 
-        ttk.Label(lf_files, text="Fichier source :").pack(anchor=tk.W)
+        ttk.Label(lf_files, text=self.tr("src_file")).pack(anchor=tk.W)
         frame_input = ttk.Frame(lf_files)
         frame_input.pack(fill=tk.X, pady=(0, 10))
         
@@ -513,9 +658,9 @@ class CryptoApp:
         self.entry_file.pack(side=tk.LEFT, fill=tk.X, expand=True)
         btn_browse = ttk.Button(frame_input, text="📂", command=self.browse_file, bootstyle="secondary")
         btn_browse.pack(side=tk.RIGHT, padx=(5, 0))
-        ToolTip(btn_browse, text="Sélectionner un fichier", padding=3)
+        ToolTip(btn_browse, text=self.tr("browse"), padding=3)
 
-        lbt_output = tk.Label(lf_files, text="Destination (Optionnel) :\nSi ce champ est laissé vide, le résultat sera enregistré dans le dossier de l'application.")
+        lbt_output = tk.Label(lf_files, text=self.tr("dest_file"))
         lbt_output.pack(anchor=tk.W)
       
         frame_output = ttk.Frame(lf_files)
@@ -524,13 +669,13 @@ class CryptoApp:
         self.entry_file_output.pack(side=tk.LEFT, fill=tk.X, expand=True)
         btn_save = ttk.Button(frame_output, text="💾", command=self.browse_output_file, bootstyle="secondary")
         btn_save.pack(side=tk.RIGHT, padx=(5, 0))
-        ToolTip(btn_save, text="Choisir où sauvegarder", padding=3)
+        ToolTip(btn_save, text=self.tr("save"), padding=3)
 
         # Groupe Sécurité
-        lf_sec = ttk.Labelframe(self.root, text="Sécurité", padding=15, bootstyle="info")
+        lf_sec = ttk.Labelframe(self.root, text=self.tr("security"), padding=15, bootstyle="info")
         lf_sec.pack(fill=tk.X, padx=20, pady=10)
 
-        ttk.Label(lf_sec, text="Mot de passe :").pack(anchor=tk.W)
+        ttk.Label(lf_sec, text=self.tr("pwd")).pack(anchor=tk.W)
         
         frame_pwd = ttk.Frame(lf_sec)
         frame_pwd.pack(fill=tk.X, pady=(0, 5))
@@ -540,48 +685,47 @@ class CryptoApp:
         
         self.btn_show_pwd = ttk.Button(frame_pwd, text="👁", width=4, bootstyle="secondary-outline", command=self.toggle_password_visibility)
         self.btn_show_pwd.pack(side=tk.RIGHT, padx=(5, 0))
-        ToolTip(self.btn_show_pwd, text="Afficher/Masquer le mot de passe", padding=3)
+        ToolTip(self.btn_show_pwd, text=self.tr("show_pwd"), padding=3)
 
         btn_gen = ttk.Button(frame_pwd, text="🎲", width=4, bootstyle="info-outline", command=self.generate_password)
         btn_gen.pack(side=tk.RIGHT, padx=(5, 0))
-        ToolTip(btn_gen, text="Générer un mot de passe aléatoire", padding=3)
+        ToolTip(btn_gen, text=self.tr("gen_pwd"), padding=3)
 
         # Option de suppression sécurisée (uniquement en mode chiffrement)
         if self.mode == "encrypt":
             self.var_secure_delete = tk.BooleanVar()
-            ttk.Checkbutton(lf_sec, text="Supprimer le fichier original (Secure Delete)", variable=self.var_secure_delete, bootstyle="round-toggle").pack(anchor=tk.W, pady=5)
+            ttk.Checkbutton(lf_sec, text=self.tr("secure_del"), variable=self.var_secure_delete, bootstyle="round-toggle").pack(anchor=tk.W, pady=5)
 
         # Boutons d'action
         frame_actions = ttk.Frame(self.root)
         frame_actions.pack(pady=20)
 
         if self.mode == "encrypt":
-            self.btn_encrypt = ttk.Button(frame_actions, text="🔒 LANCER LE CHIFFREMENT", 
+            self.btn_encrypt = ttk.Button(frame_actions, text=f"🔒 {self.tr('start_enc')}", 
                                          bootstyle="danger", width=25, command=self.do_encrypt, state=tk.DISABLED)
             self.btn_encrypt.pack(side=tk.LEFT, padx=10)
-            ToolTip(self.btn_encrypt, text="Démarrer le chiffrement", padding=3)
+            ToolTip(self.btn_encrypt, text=self.tr("start_enc"), padding=3)
             self.btn_decrypt = None
             self.btn_verify = None
         else:
-            self.btn_decrypt = ttk.Button(frame_actions, text="🔓 LANCER LE DÉCHIFFREMENT", 
+            self.btn_decrypt = ttk.Button(frame_actions, text=f"🔓 {self.tr('start_dec')}", 
                                          bootstyle="success", width=25, command=self.do_decrypt, state=tk.DISABLED)
             self.btn_decrypt.pack(side=tk.LEFT, padx=10)
-            ToolTip(self.btn_decrypt, text="Démarrer le déchiffrement", padding=3)
+            ToolTip(self.btn_decrypt, text=self.tr("start_dec"), padding=3)
             
-            self.btn_verify = ttk.Button(frame_actions, text="🔍 Vérifier", 
+            self.btn_verify = ttk.Button(frame_actions, text=f"🔍 {self.tr('verify')}", 
                                          bootstyle="info-outline", width=12, command=self.do_verify, state=tk.DISABLED)
             self.btn_verify.pack(side=tk.LEFT, padx=10)
-            ToolTip(self.btn_verify, 
-                    text="Vérifier l'intégrité sans déchiffrer", padding=3)
+            ToolTip(self.btn_verify, text=self.tr("verify"), padding=3)
             self.btn_encrypt = None
 
-        btn_cancel = ttk.Button(frame_actions, text="Retour", width=10, bootstyle="secondary-outline", command=self.show_welcome_screen)
+        btn_cancel = ttk.Button(frame_actions, text=self.tr("back"), width=10, bootstyle="secondary-outline", command=self.show_welcome_screen)
         btn_cancel.pack(side=tk.LEFT, padx=10)
-        ToolTip(btn_cancel, text="Revenir au menu principal", padding=3)
+        ToolTip(btn_cancel, text=self.tr("back"), padding=3)
 
-        btn_reset = ttk.Button(frame_actions, text="Réinitialiser", width=12, bootstyle="warning-outline", command=self.reset_fields)
+        btn_reset = ttk.Button(frame_actions, text=self.tr("reset"), width=12, bootstyle="warning-outline", command=self.reset_fields)
         btn_reset.pack(side=tk.LEFT, padx=10)
-        ToolTip(btn_reset, text="Vider tous les champs", padding=3)
+        ToolTip(btn_reset, text=self.tr("reset"), padding=3)
 
         # Barre de progression
         frame_prog = ttk.Frame(self.root)
@@ -673,10 +817,10 @@ class CryptoApp:
 
 
         if not os.path.exists(input_path):
-            messagebox.showerror("Erreur", "Veuillez sélectionner un fichier valide.")
+            messagebox.showerror(self.tr("error"), self.tr("err_file"))
             return None, None, None
         if not password:
-            messagebox.showerror("Erreur", "Le mot de passe est obligatoire.")
+            messagebox.showerror(self.tr("error"), self.tr("err_pwd"))
             return None, None, None
 
         if output_path_manual.strip():
