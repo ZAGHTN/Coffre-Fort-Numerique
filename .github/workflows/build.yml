@@ -22,6 +22,9 @@ jobs:
         pip install -r requirements.txt
         pip install pyinstaller
 
+    - name: Run Unit Tests
+      run: python test_crypto.py
+
     - name: Build Exe
       run: pyinstaller --noconsole --onefile --name="CoffreFort" crypto_gui.py
 
