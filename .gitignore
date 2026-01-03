@@ -1,0 +1,17 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Configuration et Logs (ne pas versionner les préférences utilisateur ou l'historique)
+config.ini
+historique_crypto.log
+
+# Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)
+*.enc
+*.dec
+
+# Environnements virtuels et builds
+venv/
+dist/
+build/
+*.spec
