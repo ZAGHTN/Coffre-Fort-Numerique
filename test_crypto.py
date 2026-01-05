@@ -3,8 +3,8 @@ import os
 import zlib
 from unittest.mock import patch
 from cryptography.exceptions import InvalidTag
-# On importe les fonctions logiques de votre application
-from crypto_gui import encrypt_logic, decrypt_logic, verify_integrity_logic, secure_delete
+# On importe les fonctions logiques de l'application
+from crypto_logic import encrypt_logic, decrypt_logic, verify_integrity_logic, secure_delete
 
 class TestCrypto(unittest.TestCase):
     def setUp(self):
@@ -96,6 +96,22 @@ class TestCrypto(unittest.TestCase):
         
         # Vérification 2 : os.remove a bien été appelé à la fin
         mock_remove.assert_called_with(self.input_file)
+
+    # --- EXEMPLE POUR MOCKER LES MESSAGEBOX ---
+    # Adaptez le chemin 'crypto_gui.Messagebox' si nécessaire selon vos imports
+    @patch('ttkbootstrap.dialogs.Messagebox') 
+    def test_mock_messagebox_example(self, mock_mb):
+        """
+        Test exemple : Vérifie que les popups ne bloquent pas l'exécution.
+        Le décorateur @patch remplace Messagebox par un Mock.
+        """
+        # Ici, on configure le mock pour renvoyer "Oui" (True) si une question est posée
+        # ex: Messagebox.askyesno(...) renverra True
+        mock_mb.askyesno.return_value = True
+
+        # Si votre fonction 'encrypt_logic' affichait une popup en cas d'erreur :
+        # encrypt_logic(..., mauvais_param)
+        # mock_mb.show_error.assert_called() # On vérifie que la popup a été "vue"
 
 if __name__ == '__main__':
     unittest.main()

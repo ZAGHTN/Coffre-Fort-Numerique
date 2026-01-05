@@ -11,6 +11,8 @@ historique_crypto.log
 # Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)
 *.enc
 *.dec
+*.iss
+*.bat
 
 # Environnements virtuels et builds
 venv/

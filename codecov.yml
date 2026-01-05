@@ -1,0 +1,5 @@
+ignore:
+  # Liste des fichiers ou dossiers à exclure du rapport Codecov
+  # - "crypto_gui.py"  <-- Décommentez seulement si vous séparez la logique de la GUI
+  - "tests/*"          # Il est courant d'ignorer les fichiers de tests eux-mêmes
+  - "**/*.ui"          # Exemple pour d'autres fichiers d'interface
