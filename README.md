@@ -1,7 +1,7 @@
 # Coffre-fort Numérique
 
-![Build Status](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/build.yml/badge.svg)
-![Tests](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/tests.yml/badge.svg)
+![CI Status](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/tests.yml/badge.svg)
+[![Codecov](https://img.shields.io/codecov/c/github/ZAGHTN/Coffre-Fort-Numerique?logo=codecov&logoColor=white)](https://codecov.io/gh/ZAGHTN/Coffre-Fort-Numerique)
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -59,6 +59,10 @@ python crypto_gui.py
 | **Taille du Sel** | 16 octets (Aléatoire par fichier) |
 | **Taille du IV** | 12 octets (Aléatoire par fichier) |
 | **Tag d'auth** | 16 octets |
+
+## 🤝 Contribuer
+
+Les contributions sont les bienvenues ! Veuillez consulter le fichier CONTRIBUTING.md pour connaître les règles détaillées et la procédure à suivre.
 
 ## 📝 Auteur
 
