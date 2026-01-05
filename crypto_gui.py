@@ -38,6 +38,16 @@ def resource_path(relative_path: str) -> str:
         base_path = path.dirname(path.abspath(__file__))
     return path.join(base_path, relative_path)
 
+def get_writable_path(filename: str) -> str:
+    """Obtient le chemin absolu pour un fichier inscriptible (config, logs)."""
+    if getattr(sys, 'frozen', False):
+        # Si exécuté via PyInstaller (.exe), on utilise le dossier de l'exécutable
+        base_path = os.path.dirname(sys.executable)
+    else:
+        # En développement, on utilise le dossier du script
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, filename)
+
 # --- INTERFACE GRAPHIQUE (Tkinter) ---
 
 class CryptoApp: # pragma: no cover
@@ -61,7 +71,7 @@ class CryptoApp: # pragma: no cover
                 break
 
         # Gestion de la configuration (Position)
-        self.config_file = "config.ini"
+        self.config_file = get_writable_path("config.ini")
         self.load_config()
         self.root.title(self.tr("title"))
         self.root.protocol("WM_DELETE_WINDOW", self.on_closing)
@@ -245,7 +255,7 @@ class CryptoApp: # pragma: no cover
 
     def show_logs(self):
         """Affiche le contenu du fichier journal dans une nouvelle fenêtre."""
-        log_file = "historique_crypto.log"
+        log_file = get_writable_path("historique_crypto.log")
         if not os.path.exists(log_file):
             messagebox.showinfo("Information", "Aucun historique disponible pour le moment.")
             return
@@ -545,8 +555,9 @@ class CryptoApp: # pragma: no cover
         if details:
             log_entry += f" ({details})"
         
+        log_path = get_writable_path("historique_crypto.log")
         try:
-            with open("historique_crypto.log", "a", encoding="utf-8") as f:
+            with open(log_path, "a", encoding="utf-8") as f:
                 f.write(log_entry + "\n")
         except Exception:
             pass # Ignorer les erreurs d'écriture de log
