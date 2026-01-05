@@ -2,7 +2,6 @@
 
 ![CI Status](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/tests.yml/badge.svg)
 ![Coverage Status](https://codecov.io/gh/ZAGHTN/Coffre-Fort-Numerique/branch/main/graph/badge.svg?branch=main)
-
 ![Python](https://img.shields.io/badge/python-3.8%2B-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
