@@ -5,6 +5,7 @@ __pycache__/
 # Configuration et Logs (ne pas versionner les préférences utilisateur ou l'historique)
 config.ini
 historique_crypto.log
+*.spec
 
 # Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)
 *.enc
