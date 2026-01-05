@@ -123,10 +123,6 @@ TRANSLATIONS = {
     }
 }
 
-def tr_global(key):
-    """Fonction d'aide pour traduire les messages dans les fonctions statiques."""
-    return TRANSLATIONS.get(CURRENT_LANG, TRANSLATIONS["fr"]).get(key, key)
-
 # --- LOGIQUE DE CHIFFREMENT (Moteur) ---
 
 def secure_delete(file_path: str, passes: int = 1) -> None:
@@ -158,18 +154,18 @@ def derive_key(password: str, salt: bytes) -> bytes:
     return kdf.derive(password.encode())
 
 def encrypt_logic(input_file: str, output_file: str, 
-                  password: str, compress: bool = True, callback: callable = None) -> bool:
+                  password: str, compress: bool = True, callback: callable = None, overwrite: bool = False, lang: str = "fr") -> bool:
     """Lit, compresse, chiffre et sauvegarde."""
+    tr = TRANSLATIONS.get(lang, TRANSLATIONS["fr"])
     # 1. Préparation
     if not os.path.exists(input_file):
-        messagebox.showerror(tr_global("error"), tr_global("err_file"))
-        return False
-    if os.path.exists(output_file):
-        if not messagebox.askyesno(tr_global("warning"), tr_global("confirm_overwrite").format(file=output_file)):
-            return False
+        raise FileNotFoundError(tr.get("err_file", "err_file"))
+    
+    if os.path.exists(output_file) and not overwrite:
+        raise FileExistsError(tr.get("confirm_overwrite", "confirm_overwrite").format(file=output_file))
+
     if not password:
-        messagebox.showerror(tr_global("error"), tr_global("err_pwd"))
-        return False
+        raise ValueError(tr.get("err_pwd", "err_pwd"))
 
     # Vérification de l'espace disque disponible
     try:
@@ -181,8 +177,7 @@ def encrypt_logic(input_file: str, output_file: str,
             estimated_needed = input_size + SALT_SIZE + 12 + TAG_SIZE + 4096
             
             if free < estimated_needed:
-                messagebox.showerror("Erreur Espace Disque", f"Espace disque insuffisant sur la destination.\n\nRequis (est.) : {estimated_needed / (1024**2):.2f} Mo\nDisponible : {free / (1024**2):.2f} Mo")
-                return False
+                raise OSError(f"Espace disque insuffisant sur la destination.\n\nRequis (est.) : {estimated_needed / (1024**2):.2f} Mo\nDisponible : {free / (1024**2):.2f} Mo")
     except OSError:
         pass # Si la vérification échoue (ex: droits d'accès), on tente quand même l'opération
     
@@ -249,18 +244,18 @@ def encrypt_logic(input_file: str, output_file: str,
     return True
 
 def decrypt_logic(input_file: str, output_file: str, 
-                  password: str, callback=None) -> bool:
+                  password: str, callback=None, overwrite: bool = False, lang: str = "fr") -> bool:
     """Lit, déchiffre, décompresse et sauvegarde."""
+    tr = TRANSLATIONS.get(lang, TRANSLATIONS["fr"])
     # Vérifier le arguments
     if not os.path.exists(input_file):
-        messagebox.showerror(tr_global("error"), tr_global("err_file"))
-        return False
-    if os.path.exists(output_file):
-        if not messagebox.askyesno(tr_global("warning"), tr_global("confirm_overwrite").format(file=output_file)):
-            return False
+        raise FileNotFoundError(tr.get("err_file", "err_file"))
+    
+    if os.path.exists(output_file) and not overwrite:
+        raise FileExistsError(tr.get("confirm_overwrite", "confirm_overwrite").format(file=output_file))
+
     if not password:
-        messagebox.showerror(tr_global("error"), tr_global("err_pwd"))
-        return False
+        raise ValueError(tr.get("err_pwd", "err_pwd"))
     
     # Vérification taille minimale
     file_size = os.path.getsize(input_file)
@@ -307,10 +302,11 @@ def decrypt_logic(input_file: str, output_file: str,
             f_out.write(decompressor.flush())
     return True
 
-def verify_integrity_logic(input_file: str, password: str, callback: callable = None) -> bool:
+def verify_integrity_logic(input_file: str, password: str, callback: callable = None, lang: str = "fr") -> bool:
     """Vérifie l'intégrité du fichier (AES-GCM) sans le déchiffrer sur le disque."""
+    tr = TRANSLATIONS.get(lang, TRANSLATIONS["fr"])
     if not os.path.exists(input_file):
-        raise FileNotFoundError("Le fichier n'existe pas.")
+        raise FileNotFoundError(tr.get("err_file", "err_file"))
         
     file_size = os.path.getsize(input_file)
     if file_size < SALT_SIZE + 12 + TAG_SIZE:
@@ -873,21 +869,29 @@ class CryptoApp:
             messagebox.showerror("Action impossible", "Le fichier sélectionné est déjà chiffré (.enc).\nIl est inutile de le chiffrer une seconde fois.")
             return
 
+        # Vérification de l'écrasement côté UI
+        if os.path.exists(out):
+            if not messagebox.askyesno(self.tr("warning"), self.tr("confirm_overwrite").format(file=out)):
+                return
+
         try:
-            if encrypt_logic(inp, out, pwd, callback=self.update_progress):
-                self.reset_fields()
-                
-                msg = f"Fichier chiffré créé :\n{os.path.basename(out)}"
-                
-                if hasattr(self, 'var_secure_delete') and self.var_secure_delete.get():
-                    try:
-                        secure_delete(inp)
-                        msg += "\n\nLe fichier original a été supprimé de manière sécurisée."
-                    except Exception as del_err:
-                        msg += f"\n\nATTENTION: Échec de la suppression sécurisée :\n{del_err}"
-                
-                self.log_operation("Chiffrement", os.path.basename(inp), "Succès")
-                messagebox.showinfo("Succès", msg)
+            # On appelle la logique avec overwrite=True car l'utilisateur a déjà confirmé
+            encrypt_logic(inp, out, pwd, callback=self.update_progress, overwrite=True, lang=self.current_lang)
+            
+            self.reset_fields()
+            
+            msg = f"Fichier chiffré créé :\n{os.path.basename(out)}"
+            
+            if hasattr(self, 'var_secure_delete') and self.var_secure_delete.get():
+                try:
+                    secure_delete(inp)
+                    msg += "\n\nLe fichier original a été supprimé de manière sécurisée."
+                except Exception as del_err:
+                    msg += f"\n\nATTENTION: Échec de la suppression sécurisée :\n{del_err}"
+            
+            self.log_operation("Chiffrement", os.path.basename(inp), "Succès")
+            messagebox.showinfo("Succès", msg)
+
         except Exception as e:
             self.log_operation("Chiffrement", os.path.basename(inp), "Erreur", str(e))
             messagebox.showerror("Erreur", str(e))
@@ -898,9 +902,13 @@ class CryptoApp:
         
         if not inp or not out: return
         
-        try:
-            if not decrypt_logic(inp, out, pwd, callback=self.update_progress):
+        # Vérification de l'écrasement côté UI
+        if os.path.exists(out):
+            if not messagebox.askyesno(self.tr("warning"), self.tr("confirm_overwrite").format(file=out)):
                 return
+
+        try:
+            decrypt_logic(inp, out, pwd, callback=self.update_progress, overwrite=True, lang=self.current_lang)
             self.reset_fields()
          
             self.log_operation("Déchiffrement", os.path.basename(inp), "Succès")
@@ -928,7 +936,7 @@ class CryptoApp:
             return
 
         try:
-            if verify_integrity_logic(inp, pwd, callback=self.update_progress):
+            if verify_integrity_logic(inp, pwd, callback=self.update_progress, lang=self.current_lang):
                 self.progress["value"] = 0
                 self.lbl_progress.config(text="0 %")
                 self.log_operation("Vérification", os.path.basename(inp), "Succès")
