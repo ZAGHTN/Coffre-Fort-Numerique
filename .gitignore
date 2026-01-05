@@ -6,6 +6,7 @@ __pycache__/
 config.ini
 historique_crypto.log
 *.spec
+.coverage
 
 # Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)
 *.enc
