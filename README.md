@@ -1,6 +1,7 @@
 # Coffre-fort Numérique
 
 ![Build Status](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/build.yml/badge.svg)
+![Tests](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/tests.yml/badge.svg)
 
 Une application de bureau sécurisée et moderne pour chiffrer, déchiffrer et protéger vos fichiers sensibles. Développée en Python avec une interface graphique intuitive.
 
