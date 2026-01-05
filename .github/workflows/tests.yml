@@ -42,11 +42,11 @@ jobs:
     - name: Run Tests with Coverage (Linux)
       if: runner.os == 'Linux'
       run: |
-        xvfb-run --auto-servernum coverage run test_crypto.py
-        coverage xml
+        xvfb-run --auto-servernum --server-args="-screen 0 1280x1024x24" python -m coverage run -m unittest test_crypto.py
+        python -m coverage xml
 
     - name: Upload coverage to Codecov
       if: runner.os == 'Linux'
-      uses: codecov/codecov-action@v5
+      uses: codecov/codecov-action@v4
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
