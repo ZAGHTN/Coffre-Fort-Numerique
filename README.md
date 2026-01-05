@@ -2,6 +2,8 @@
 
 ![Build Status](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/build.yml/badge.svg)
 ![Tests](https://github.com/ZAGHTN/Coffre-Fort-Numerique/actions/workflows/tests.yml/badge.svg)
+![Python](https://img.shields.io/badge/python-3.8%2B-blue)
+![License](https://img.shields.io/badge/license-MIT-green)
 
 Une application de bureau sécurisée et moderne pour chiffrer, déchiffrer et protéger vos fichiers sensibles. Développée en Python avec une interface graphique intuitive.
 
