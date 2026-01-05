@@ -1,2 +1,5 @@
+# Bibliothèque de cryptographie (AES-GCM, PBKDF2)
 cryptography>=41.0.0
+
+# Interface graphique moderne (Thèmes, Widgets)
 ttkbootstrap>=1.10.0
