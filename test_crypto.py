@@ -216,5 +216,5 @@ class TestCrypto(unittest.TestCase):
         self.assertEqual(donnees_lues, b'premier bloc de donneesdeuxieme bloc')
         self.assertEqual(mock_file.read.call_count, 3, "La méthode read() aurait dû être appelée 3 fois.")
 
-if __name__ == '__main__':
+if __name__ == '__main__': # pragma: no cover
     unittest.main()
