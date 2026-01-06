@@ -9,6 +9,7 @@ secret.txt
 *.spec
 .coverage
 .coveragerc
+coverage.xml
 
 # Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)
 *.enc
@@ -20,4 +21,8 @@ secret.txt
 venv/
 dist/
 build/
-*.spec
+
+# IDE et Environnement
+.env
+.vscode/
+.idea/
