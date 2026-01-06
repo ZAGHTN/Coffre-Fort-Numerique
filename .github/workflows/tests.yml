@@ -32,6 +32,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install flake8
+        pip install coverage
         pip install -r requirements.txt
 
     - name: Analyse de la qualité du code (Flake8)
@@ -43,4 +44,11 @@ jobs:
 
     - name: Lancer les tests
       # xvfb-run crée un affichage virtuel pour éviter l'erreur "no display name"
-      run: xvfb-run python -m unittest test_crypto.py
+      run: |
+        xvfb-run coverage run -m unittest test_crypto.py
+        coverage xml
+
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v5
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
