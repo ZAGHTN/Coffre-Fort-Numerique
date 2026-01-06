@@ -44,9 +44,9 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
 
     - name: Lancer les tests
-      # xvfb-run crée un affichage virtuel pour éviter l'erreur "no display name"
+      # xvfb-run n'est pas nécessaire pour les tests logiques (et non reconnu sous Windows)
       run: |
-        xvfb-run coverage run --omit=crypto_gui.py -m unittest test_crypto.py
+        coverage run --omit=crypto_gui.py -m unittest test_crypto.py
         coverage xml
 
     - name: Upload coverage reports to Codecov
