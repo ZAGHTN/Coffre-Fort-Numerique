@@ -1,7 +1,7 @@
 import unittest
 import os
 import zlib
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from cryptography.exceptions import InvalidTag
 # On importe les fonctions logiques de l'application
 from crypto_logic import encrypt_logic, decrypt_logic, verify_integrity_logic, secure_delete
@@ -196,7 +196,7 @@ class TestCrypto(unittest.TestCase):
 
         # 2. On crée un mock de l'objet fichier et on configure sa méthode read().
         # MagicMock simule les méthodes magiques comme __enter__/__exit__ si besoin.
-        mock_file = unittest.mock.MagicMock()
+        mock_file = MagicMock()
         mock_file.read.side_effect = chunks_a_lire
 
         # 3. Code qui utilise cet objet fichier (simule une boucle de lecture).
