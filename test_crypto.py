@@ -97,22 +97,6 @@ class TestCrypto(unittest.TestCase):
         # Vérification 2 : os.remove a bien été appelé à la fin
         mock_remove.assert_called_with(self.input_file)
 
-    # --- EXEMPLE POUR MOCKER LES MESSAGEBOX ---
-    # Adaptez le chemin 'crypto_gui.Messagebox' si nécessaire selon vos imports
-    @patch('ttkbootstrap.dialogs.Messagebox') 
-    def test_mock_messagebox_example(self, mock_mb):
-        """
-        Test exemple : Vérifie que les popups ne bloquent pas l'exécution.
-        Le décorateur @patch remplace Messagebox par un Mock.
-        """
-        # Ici, on configure le mock pour renvoyer "Oui" (True) si une question est posée
-        # ex: Messagebox.askyesno(...) renverra True
-        mock_mb.askyesno.return_value = True
-
-        # Si votre fonction 'encrypt_logic' affichait une popup en cas d'erreur :
-        # encrypt_logic(..., mauvais_param)
-        # mock_mb.show_error.assert_called() # On vérifie que la popup a été "vue"
-
     def test_callbacks_and_options(self):
         """Test : Callbacks et option de compression (couvre les branches if callback: ...)"""
         # Callback simple pour vérifier qu'il est bien appelé
