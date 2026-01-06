@@ -8,6 +8,7 @@ historique_crypto.log
 secret.txt
 *.spec
 .coverage
+.coveragerc
 
 # Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)
 *.enc
