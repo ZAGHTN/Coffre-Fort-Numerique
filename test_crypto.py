@@ -119,6 +119,22 @@ class TestCrypto(unittest.TestCase):
         verify_integrity_logic(self.enc_file, self.password, callback=cb)
         self.assertTrue(progress_called, "Le callback de vérification n'a pas été appelé")
 
+    def test_compression_efficiency(self):
+        """Test : Vérifie que la compression réduit la taille pour des données répétitives"""
+        # Créer un fichier très compressible (ex: 10000 fois la lettre 'A')
+        content = b"A" * 10000
+        with open(self.input_file, "wb") as f:
+            f.write(content)
+            
+        # Chiffrer avec compression (par défaut)
+        encrypt_logic(self.input_file, self.enc_file, self.password, compress=True, overwrite=True)
+        
+        input_size = os.path.getsize(self.input_file)
+        output_size = os.path.getsize(self.enc_file)
+        
+        # La taille compressée + overhead (44 octets) doit être bien inférieure à la taille originale
+        self.assertLess(output_size, input_size, "La compression n'a pas réduit la taille du fichier")
+
     def test_input_validation_errors(self):
         """Test : Erreurs de validation (Fichier manquant, mot de passe vide, fichier trop petit)"""
         # Cas : Fichier inexistant
