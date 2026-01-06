@@ -166,5 +166,16 @@ class TestCrypto(unittest.TestCase):
         """Test : secure_delete sur un fichier qui n'existe pas (doit juste retourner)"""
         secure_delete("fichier_qui_nexiste_pas.txt")
 
+    @patch("shutil.disk_usage")
+    def test_disk_full_error(self, mock_disk_usage):
+        """Test : Erreur d'espace disque insuffisant (simulé)"""
+        # Simuler un disque avec seulement 1 octet de libre : (total, used, free)
+        mock_disk_usage.return_value = (1000, 999, 1) 
+        
+        with self.assertRaises(OSError) as cm:
+            encrypt_logic(self.input_file, self.enc_file, self.password)
+        
+        self.assertIn("Espace disque insuffisant", str(cm.exception))
+
 if __name__ == '__main__':
     unittest.main()

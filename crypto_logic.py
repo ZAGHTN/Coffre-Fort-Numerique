@@ -151,18 +151,20 @@ def encrypt_logic(input_file: str, output_file: str,
         raise ValueError(tr.get("err_pwd", "err_pwd"))
 
     # Vérification de l'espace disque disponible
-    try:
-        output_dir = os.path.dirname(os.path.abspath(output_file))
-        if os.path.exists(output_dir):
+    output_dir = os.path.dirname(os.path.abspath(output_file))
+    if os.path.exists(output_dir):
+        try:
             _, _, free = shutil.disk_usage(output_dir)
+        except OSError:
+            free = None # Impossible de vérifier (ex: droits d'accès), on tente quand même
+
+        if free is not None:
             input_size = os.path.getsize(input_file)
             # Estimation pessimiste : taille originale + métadonnées + marge de sécurité (4 Ko)
             estimated_needed = input_size + SALT_SIZE + 12 + TAG_SIZE + 4096
             
             if free < estimated_needed:
                 raise OSError(f"Espace disque insuffisant sur la destination.\n\nRequis (est.) : {estimated_needed / (1024**2):.2f} Mo\nDisponible : {free / (1024**2):.2f} Mo")
-    except OSError:
-        pass # Si la vérification échoue (ex: droits d'accès), on tente quand même l'opération
     
     # 2. Chiffrement
     iv = os.urandom(12)
