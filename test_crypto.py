@@ -187,5 +187,30 @@ class TestCrypto(unittest.TestCase):
         with self.assertRaises(PermissionError):
             secure_delete(self.input_file)
 
+    def test_side_effect_for_file_reading_simulation(self):
+        """Démonstration : Simuler la lecture d'un fichier par blocs avec side_effect."""
+        
+        # 1. Les "morceaux" que la méthode read() simulera retourner.
+        # Le dernier est un bytestring vide pour marquer la fin du fichier (EOF).
+        chunks_a_lire = [b'premier bloc de donnees', b'deuxieme bloc', b'']
+
+        # 2. On crée un mock de l'objet fichier et on configure sa méthode read().
+        # MagicMock simule les méthodes magiques comme __enter__/__exit__ si besoin.
+        mock_file = unittest.mock.MagicMock()
+        mock_file.read.side_effect = chunks_a_lire
+
+        # 3. Code qui utilise cet objet fichier (simule une boucle de lecture).
+        donnees_lues = b""
+        while True:
+            # Chaque appel à mock_file.read() retournera le prochain élément de la liste.
+            chunk = mock_file.read(1024) # L'argument (1024) est ignoré par le mock ici.
+            if not chunk:
+                break
+            donnees_lues += chunk
+
+        # 4. Vérifications
+        self.assertEqual(donnees_lues, b'premier bloc de donneesdeuxieme bloc')
+        self.assertEqual(mock_file.read.call_count, 3, "La méthode read() aurait dû être appelée 3 fois.")
+
 if __name__ == '__main__':
     unittest.main()
