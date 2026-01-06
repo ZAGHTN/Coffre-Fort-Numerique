@@ -177,5 +177,15 @@ class TestCrypto(unittest.TestCase):
         
         self.assertIn("Espace disque insuffisant", str(cm.exception))
 
+    @patch("os.remove")
+    def test_permission_error_simulation(self, mock_remove):
+        """Test : Simulation d'une PermissionError avec side_effect"""
+        # On configure le mock pour qu'il lève une exception quand il est appelé
+        mock_remove.side_effect = PermissionError("Accès refusé : fichier verrouillé par le système")
+        
+        # secure_delete appelle os.remove, qui va maintenant "exploser" avec l'erreur
+        with self.assertRaises(PermissionError):
+            secure_delete(self.input_file)
+
 if __name__ == '__main__':
     unittest.main()
