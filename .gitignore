@@ -8,7 +8,6 @@ historique_crypto.log
 secret.txt
 *.spec
 .coverage
-.coveragerc
 coverage.xml
 
 # Fichiers de données (ne jamais uploader de fichiers chiffrés ou sensibles)

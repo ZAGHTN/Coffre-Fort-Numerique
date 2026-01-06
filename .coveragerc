@@ -1,0 +1,8 @@
+[report]
+# Liste des motifs à exclure du rapport de couverture
+exclude_lines =
+    # Réactive le pragma standard
+    pragma: no cover
+    
+    # Exclure systématiquement les blocs main
+    if __name__ == .__main__.:
