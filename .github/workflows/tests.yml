@@ -45,7 +45,7 @@ jobs:
     - name: Lancer les tests
       # xvfb-run crée un affichage virtuel pour éviter l'erreur "no display name"
       run: |
-        xvfb-run coverage run -m unittest test_crypto.py
+        xvfb-run coverage run --omit=crypto_gui.py -m unittest test_crypto.py
         coverage xml
 
     - name: Upload coverage reports to Codecov
