@@ -1,3 +1,3 @@
-ttkbootstrap
-cryptography
-pyinstaller
+cryptography==46.0.3
+pyinstaller==6.17.0
+ttkbootstrap==1.19.2
