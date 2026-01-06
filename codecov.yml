@@ -1,5 +1,5 @@
 ignore:
   # Liste des fichiers ou dossiers à exclure du rapport Codecov
   - "crypto_gui.py"
-  - "tests/*"          # Il est courant d'ignorer les fichiers de tests eux-mêmes
+  - "test_*.py"        # Ignore les fichiers de tests à la racine (ex: test_crypto.py)
   - "**/*.ui"          # Exemple pour d'autres fichiers d'interface
