@@ -113,5 +113,58 @@ class TestCrypto(unittest.TestCase):
         # encrypt_logic(..., mauvais_param)
         # mock_mb.show_error.assert_called() # On vérifie que la popup a été "vue"
 
+    def test_callbacks_and_options(self):
+        """Test : Callbacks et option de compression (couvre les branches if callback: ...)"""
+        # Callback simple pour vérifier qu'il est bien appelé
+        progress_called = False
+        def cb(current, total):
+            nonlocal progress_called
+            progress_called = True
+
+        # 1. Encrypt avec compress=False (branche else) et callback
+        encrypt_logic(self.input_file, self.enc_file, self.password, compress=False, callback=cb, overwrite=True)
+        self.assertTrue(progress_called, "Le callback de chiffrement n'a pas été appelé")
+        
+        # 2. Decrypt avec callback
+        progress_called = False
+        decrypt_logic(self.enc_file, self.dec_file, self.password, callback=cb, overwrite=True)
+        self.assertTrue(progress_called, "Le callback de déchiffrement n'a pas été appelé")
+
+        # 3. Verify avec callback
+        progress_called = False
+        verify_integrity_logic(self.enc_file, self.password, callback=cb)
+        self.assertTrue(progress_called, "Le callback de vérification n'a pas été appelé")
+
+    def test_input_validation_errors(self):
+        """Test : Erreurs de validation (Fichier manquant, mot de passe vide, fichier trop petit)"""
+        # Cas : Fichier inexistant
+        with self.assertRaises(FileNotFoundError):
+            encrypt_logic("fichier_fantome.txt", self.enc_file, self.password)
+        with self.assertRaises(FileNotFoundError):
+            decrypt_logic("fichier_fantome.txt", self.dec_file, self.password)
+        with self.assertRaises(FileNotFoundError):
+            verify_integrity_logic("fichier_fantome.txt", self.password)
+
+        # Cas : Mot de passe vide
+        with self.assertRaises(ValueError):
+            encrypt_logic(self.input_file, self.enc_file, "")
+        with self.assertRaises(ValueError):
+            decrypt_logic(self.enc_file, self.dec_file, "")
+
+        # Cas : Fichier trop petit (corrompu ou vide)
+        tiny_file = "tiny.txt"
+        with open(tiny_file, "w") as f: f.write("trop_court")
+        try:
+            with self.assertRaises(ValueError): # Doit lever "Fichier invalide ou corrompu"
+                decrypt_logic(tiny_file, "out.txt", self.password)
+            with self.assertRaises(ValueError):
+                verify_integrity_logic(tiny_file, self.password)
+        finally:
+            if os.path.exists(tiny_file): os.remove(tiny_file)
+
+    def test_secure_delete_missing_file(self):
+        """Test : secure_delete sur un fichier qui n'existe pas (doit juste retourner)"""
+        secure_delete("fichier_qui_nexiste_pas.txt")
+
 if __name__ == '__main__':
     unittest.main()
