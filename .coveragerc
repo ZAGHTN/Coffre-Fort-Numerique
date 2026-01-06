@@ -1,4 +1,17 @@
+[run]
+# Définit la racine du projet pour l'analyse
+source = .
+# Fichiers à exclure (remplace l'argument --omit de la ligne de commande)
+omit =
+    crypto_gui.py
+    test_crypto.py
+    venv/*
+    build/*
+    dist/*
+
 [report]
+# Affiche les lignes manquantes dans le terminal
+show_missing = True
 # Liste des motifs à exclure du rapport de couverture
 exclude_lines =
     # Réactive le pragma standard
