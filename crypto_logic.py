@@ -229,7 +229,7 @@ def encrypt_logic(input_file: str, output_file: str,
     return True
 
 def decrypt_logic(input_file: str, output_file: str, 
-                  password: str, callback=None, overwrite: bool = False, lang: str = "fr") -> bool:
+                  password: str, compress: bool = True, callback=None, overwrite: bool = False, lang: str = "fr") -> bool:
     """Lit, déchiffre, décompresse et sauvegarde."""
     tr = TRANSLATIONS.get(lang, TRANSLATIONS["fr"])
     # Vérifier le arguments
@@ -260,7 +260,7 @@ def decrypt_logic(input_file: str, output_file: str,
         key = derive_key(password, salt)
         cipher = Cipher(algorithms.AES(key), modes.GCM(iv, tag))
         decryptor = cipher.decryptor()
-        decompressor = zlib.decompressobj()
+        decompressor = zlib.decompressobj() if compress else None
 
         data_end = file_size - TAG_SIZE
         
@@ -276,15 +276,21 @@ def decrypt_logic(input_file: str, output_file: str,
                 if not n: break
                 
                 decrypted = decryptor.update(view[:n])
-                f_out.write(decompressor.decompress(decrypted))
+                if decompressor:
+                    f_out.write(decompressor.decompress(decrypted))
+                else:
+                    f_out.write(decrypted)
                 
                 if callback:
                     callback(f_in.tell(), file_size)
             
             # Vérification finale (lève InvalidTag si corrompu)
             final_dec = decryptor.finalize()
-            f_out.write(decompressor.decompress(final_dec))
-            f_out.write(decompressor.flush())
+            if decompressor:
+                f_out.write(decompressor.decompress(final_dec))
+                f_out.write(decompressor.flush())
+            else:
+                f_out.write(final_dec)
     return True
 
 def verify_integrity_logic(input_file: str, password: str, callback: callable = None, lang: str = "fr") -> bool:

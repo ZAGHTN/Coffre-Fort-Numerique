@@ -127,7 +127,7 @@ class TestCrypto(unittest.TestCase):
         
         # 2. Decrypt avec callback
         progress_called = False
-        decrypt_logic(self.enc_file, self.dec_file, self.password, callback=cb, overwrite=True)
+        decrypt_logic(self.enc_file, self.dec_file, self.password, compress=False, callback=cb, overwrite=True)
         self.assertTrue(progress_called, "Le callback de déchiffrement n'a pas été appelé")
 
         # 3. Verify avec callback
@@ -148,6 +148,10 @@ class TestCrypto(unittest.TestCase):
         # Cas : Mot de passe vide
         with self.assertRaises(ValueError):
             encrypt_logic(self.input_file, self.enc_file, "")
+        
+        # Création d'un fichier factice pour que decrypt_logic ne lève pas FileNotFoundError
+        with open(self.enc_file, "wb") as f: f.write(b"dummy_content")
+
         with self.assertRaises(ValueError):
             decrypt_logic(self.enc_file, self.dec_file, "")
 
